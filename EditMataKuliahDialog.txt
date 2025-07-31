@@ -1,0 +1,156 @@
+"use client";
+
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { useState } from "react";
+import { BookPlus, Edit, Loader } from "lucide-react";
+import { toast } from "sonner";
+
+import { CustomToast } from "@/components/toast";
+import { editMataKuliah } from "@/app/_lib/actions/mataKuliahActions";
+
+const updateMataKuliahSchema = z.object({
+  id: z.number(),
+  judul: z.string().min(1, { message: "Nama jenis kegiatan harus diisi" }),
+  semester: z.coerce
+    .number()
+    .min(1)
+    .max(6, { message: "Semester harus antara 1-6" }),
+});
+
+export type TUpdateMataKuliah = z.infer<typeof updateMataKuliahSchema>;
+
+type PageProps = {
+  id: number;
+  judul: string;
+  semester: number;
+  programStudiId: number;
+};
+
+export default function EditMataKuliahDialog({
+  id,
+  judul,
+  semester,
+  programStudiId,
+}: PageProps) {
+  const [loading, setLoading] = useState(false);
+  const [open, setOpen] = useState(false);
+  const form = useForm<TUpdateMataKuliah>({
+    resolver: zodResolver(updateMataKuliahSchema),
+    defaultValues: {
+      id,
+      judul,
+      semester,
+      
+    },
+  });
+
+  async function onSubmit(values: TUpdateMataKuliah) {
+    setLoading(true);
+
+    const actions = await editMataKuliah(values);
+
+    if (actions.success) {
+      toast.custom(() => (
+        <CustomToast
+          title="Berhasil update mata kuliah"
+          description="Perubahan data mata kuliah telah berhasil disimpan."
+          variant="success"
+        />
+      ));
+      setOpen(false);
+    }
+
+    setLoading(false);
+  }
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button size={"sm"} variant="outline">
+          <Edit />
+          Edit
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-[425px]">
+        <DialogHeader>
+          <DialogTitle>Edit Mata Kuliah</DialogTitle>
+          <DialogDescription>
+            Edit mata kuliah baru dengan mengisi form berikut.
+          </DialogDescription>
+        </DialogHeader>
+        <Form {...form}>
+          <form
+            className="flex flex-col gap-4"
+            onSubmit={form.handleSubmit(onSubmit)}
+          >
+            <FormField
+              control={form.control}
+              name="judul"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Judul Mata Kuliah</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Ketik Judul Mata Kuliah" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="semester"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Semester</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      placeholder="Ketik Semester"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <Button type="submit" disabled={loading}>
+              {loading ? (
+                <>
+                  <Loader className="animate-spin" /> Loading . . .
+                </>
+              ) : (
+                "Submit"
+              )}
+            </Button>
+          </form>
+        </Form>
+      </DialogContent>
+    </Dialog>
+  );
+}

@@ -1,0 +1,29 @@
+- perbaiki semua toast yang tdk pake CustomToast
+
+- fix hapus pengguna toast
+
+- tentukan logika untuk mengubah pembimbing apakah promotor bisa jadi sekaligus pembimbing atau ko promotor
+
+- perbaiki fungsi terima pengajuan bimbingan
+
+- perbaiki fungsi mengubah pembimbing mahasiswa dan tampilkan riwayat pengajuan
+
+- perbaiki fungsi tambah lampiran kegiatan sama filter semester
+
+- fix filter detail program studi
+
+- perbaiki error ketika tambah kegiatan
+
+- ubah skema penyimpanan data logbook menyimpan pada model baru yaitu KegiatanFieldValues yang memiliki relasi ke ProgramStudiFields dan Kegiatan daripada menyimpan dalam bentuk json
+
+- fix navbar ketika belum edit semester nonaktifkan isDropdown
+
+- fix agar mahasiswa tidak perlu login ulang setelah mengubah semester
+
+- fix agar mahasiswa hanya perlu edit semester ketika edit profil
+
+- hapus kunci template pada detail jenis kegiatan
+
+- buat menu untuk menambahkan kps pada edit program studi
+
+- fix hapus mahasiswa

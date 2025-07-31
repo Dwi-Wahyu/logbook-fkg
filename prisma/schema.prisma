@@ -1,0 +1,247 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Pengguna {
+  id             String       @id @default(uuid())
+  nama           String
+  username       String       @unique
+  password       String
+  peran          String
+  avatar         String?
+  mahasiswa      Mahasiswa?
+  dosen          Dosen?
+  notifikasi     Notifikasi[]
+  logbook        Logbook[]
+  programStudiId String
+  programStudi   ProgramStudi @relation(fields: [programStudiId], references: [id], onDelete: Restrict)
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  // Relasi balik dari ketua (opsional satu-satu)
+  ketuaiProgramStudi ProgramStudi? @relation("KetuaProgramStudi")
+  Catatan            Catatan[]
+
+  @@map("pengguna")
+}
+
+model Mahasiswa {
+  id                         String                       @id @default(uuid())
+  penggunaId                 String                       @unique
+  pengguna                   Pengguna                     @relation(fields: [penggunaId], references: [id], onDelete: Cascade)
+  logbook                    Logbook[]
+  pembimbing                 Dosen?                       @relation("PembimbingMahasiswa", fields: [pembimbingId], references: [id], onDelete: SetNull)
+  pembimbingId               String?
+  permohonanBimbingan        PermohonanBimbingan[]
+  semester                   Int?
+  judulDisertasi             String?
+  angkatan                   String?
+  tempatTanggalLahir         String?
+  alamat                     String?
+  alamatKeluarga             String?
+  tahunLulus                 String?
+  mulaiMasukPendidikan       DateTime?
+  pekerjaan                  String?
+  nomorTelpon                String?
+  email                      String?
+  jenisKelamin               String?
+  createdAt                  DateTime                     @default(now())
+  updatedAt                  DateTime                     @updatedAt
+  RiwayatPerubahanPembimbing RiwayatPerubahanPembimbing[]
+
+  @@map("mahasiswa")
+}
+
+model Dosen {
+  id                  String                @id @default(uuid())
+  penggunaId          String                @unique
+  pengguna            Pengguna              @relation(fields: [penggunaId], references: [id], onDelete: Cascade)
+  mahasiswaBimbingan  Mahasiswa[]           @relation("PembimbingMahasiswa")
+  permohonanBimbingan PermohonanBimbingan[]
+  createdAt           DateTime              @default(now())
+  updatedAt           DateTime              @updatedAt
+
+  @@map("dosen")
+}
+
+model Logbook {
+  id          String     @id @default(uuid())
+  mahasiswaId String?
+  mahasiswa   Mahasiswa? @relation(fields: [mahasiswaId], references: [id], onDelete: Cascade)
+  kegiatan    Kegiatan[]
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  Pengguna    Pengguna?  @relation(fields: [penggunaId], references: [id], onDelete: Cascade)
+  penggunaId  String?
+
+  @@map("logbook")
+}
+
+model Kegiatan {
+  id              String                @id @default(uuid())
+  logbookId       String
+  logbook         Logbook               @relation(fields: [logbookId], references: [id], onDelete: Cascade)
+  mataKuliahId    Int?
+  MataKuliah      MataKuliah?           @relation(fields: [mataKuliahId], references: [id], onDelete: SetNull)
+  jenisKegiatanId String
+  jenisKegiatan   JenisKegiatan         @relation(fields: [jenisKegiatanId], references: [id], onDelete: NoAction)
+  semester        Int?
+  fieldValues     FieldKegiatanValues[]
+  lampiran        Lampiran[]
+  status          String
+  alasanDitolak   String?
+  createdAt       DateTime              @default(now())
+  updatedAt       DateTime              @updatedAt
+  Catatan         Catatan[]
+
+  @@map("kegiatan")
+}
+
+model Catatan {
+  id         String   @id @default(uuid())
+  kegiatanId String
+  kegiatan   Kegiatan @relation(fields: [kegiatanId], references: [id], onDelete: Cascade)
+  penggunaId String
+  pengguna   Pengguna @relation(fields: [penggunaId], references: [id], onDelete: Cascade)
+  konten     String   @db.Text
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@map("catatan")
+}
+
+model MataKuliah {
+  id             Int           @id @default(autoincrement())
+  judul          String
+  semester       Int
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  kegiatan       Kegiatan[]
+  ProgramStudi   ProgramStudi? @relation(fields: [programStudiId], references: [id], onDelete: SetNull)
+  programStudiId String?
+
+  @@unique([judul, semester])
+  @@map("matakuliah")
+}
+
+model Lampiran {
+  id         String   @id @default(uuid())
+  kegiatanId String
+  kegiatan   Kegiatan @relation(fields: [kegiatanId], references: [id], onDelete: Cascade)
+  namaFile   String
+  url        String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@map("lampiran")
+}
+
+model PermohonanBimbingan {
+  id            String    @id @default(uuid())
+  mahasiswaId   String
+  mahasiswa     Mahasiswa @relation(fields: [mahasiswaId], references: [id], onDelete: Cascade)
+  dosenId       String
+  dosen         Dosen     @relation(fields: [dosenId], references: [id], onDelete: Cascade)
+  status        String    @default("TERKIRIM")
+  pesan         String?
+  alasanDitolak String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@map("permohonan_bimbingan")
+}
+
+model Notifikasi {
+  id         String   @id @default(uuid())
+  penggunaId String
+  pengguna   Pengguna @relation(fields: [penggunaId], references: [id], onDelete: Cascade)
+  judul      String
+  pesan      String
+  isRead     Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@map("notifikasi")
+}
+
+model ProgramStudi {
+  id                         String          @id @default(uuid())
+  nama                       String          @unique
+  displayName                String
+  pengguna                   Pengguna[]
+  ketuaProgramStudiId        String?         @unique
+  ketuaProgramStudi          Pengguna?       @relation("KetuaProgramStudi", fields: [ketuaProgramStudiId], references: [id], onDelete: SetNull)
+  jenisKegiatan              JenisKegiatan[]
+  mataKuliah                 MataKuliah[]
+  templateSingleFieldForDate Boolean         @default(true)
+  createdAt                  DateTime        @default(now())
+  updatedAt                  DateTime        @updatedAt
+
+  @@map("program_studi")
+}
+
+model JenisKegiatan {
+  id                   String               @id @default(uuid())
+  programStudiId       String
+  programStudi         ProgramStudi         @relation(fields: [programStudiId], references: [id], onDelete: Cascade)
+  nama                 String
+  templateIdentifier   String?              @unique
+  isMataKuliahRequired Boolean              @default(true)
+  kegiatan             Kegiatan[]
+  fields               JenisKegiatanField[]
+  createdAt            DateTime             @default(now())
+  updatedAt            DateTime             @updatedAt
+
+  @@unique([programStudiId, nama])
+  @@map("jenis_kegiatan")
+}
+
+model JenisKegiatanField {
+  id              String                @id @default(uuid())
+  jenisKegiatanId String
+  jenisKegiatan   JenisKegiatan         @relation(fields: [jenisKegiatanId], references: [id], onDelete: Cascade)
+  fieldName       String
+  fieldType       String
+  templateKey     String?
+  showInTable     Boolean               @default(true)
+  isRequired      Boolean               @default(false)
+  order           Int                   @default(0)
+  createdAt       DateTime              @default(now())
+  updatedAt       DateTime              @updatedAt
+  fieldValues     FieldKegiatanValues[]
+
+  @@unique([jenisKegiatanId, fieldName])
+  @@map("jenis_kegiatan_field")
+}
+
+model FieldKegiatanValues {
+  id                   String             @id @default(uuid())
+  kegiatanId           String
+  kegiatan             Kegiatan           @relation(fields: [kegiatanId], references: [id], onDelete: Cascade)
+  jenisKegiatanFieldId String
+  jenisKegiatanField   JenisKegiatanField @relation(fields: [jenisKegiatanFieldId], references: [id], onDelete: Cascade)
+  value                String             @db.VarChar(255)
+  createdAt            DateTime           @default(now())
+  updatedAt            DateTime           @updatedAt
+
+  @@unique([kegiatanId, jenisKegiatanFieldId])
+  @@map("field_kegiatan_values")
+}
+
+model RiwayatPerubahanPembimbing {
+  id               String    @id @default(uuid())
+  mahasiswaId      String
+  mahasiswa        Mahasiswa @relation(fields: [mahasiswaId], references: [id], onDelete: Cascade)
+  alasan           String
+  pembimbingIdLama String?
+  pembimbingIdBaru String?
+  changedAt        DateTime  @default(now())
+
+  @@map("riwayat_perubahan_pembimbing")
+}
