@@ -2,11 +2,11 @@
 
 Selamat datang di repositori Logbook Digital Fakultas Kedokteran Gigi Universitas Hasanuddin (FKG-UH). Aplikasi web ini dirancang untuk memodernisasi dan menyederhanakan proses pencatatan kegiatan (logbook) dan bimbingan antara mahasiswa dan dosen.
 
-## 📜 Deskripsi
+## Deskripsi
 
 Aplikasi ini menyediakan platform terpusat bagi mahasiswa untuk mencatat kegiatan harian mereka, mengunggah lampiran, dan mengajukan bimbingan kepada dosen pembimbing. Dosen dapat memantau kemajuan mahasiswa bimbingan mereka, memberikan tanggapan, dan menyetujui permohonan bimbingan. Admin memiliki kontrol penuh atas manajemen pengguna dan data master seperti mata kuliah.
 
-## ✨ Fitur Utama
+## Fitur Utama
 
 - **Manajemen Peran**: Tiga peran pengguna dengan hak akses yang berbeda: **Admin**, **Dosen**, dan **Mahasiswa**.
 - **Dashboard Interaktif**: Visualisasi data dan ringkasan statistik untuk setiap peran pengguna.
@@ -19,7 +19,7 @@ Aplikasi ini menyediakan platform terpusat bagi mahasiswa untuk mencatat kegiata
 - **Ekspor Dokumen**: Mahasiswa dapat mengunduh rekap logbook mereka dalam format `.docx`.
 - **Desain Responsif**: Antarmuka yang dapat diakses dengan baik di perangkat desktop maupun mobile.
 
-## 🚀 Tumpukan Teknologi (Tech Stack)
+## Tumpukan Teknologi (Tech Stack)
 
 - **Framework**: [Next.js](https://nextjs.org/) (dengan App Router)
 - **Bahasa**: [TypeScript](https://www.typescriptlang.org/)
@@ -33,7 +33,7 @@ Aplikasi ini menyediakan platform terpusat bagi mahasiswa untuk mencatat kegiata
 - **Grafik & Chart**: [Recharts](https://recharts.org/)
 - **HTTP Client**: [Axios](https://axios-http.com/)
 
-## 📁 Struktur Proyek
+## Struktur Proyek
 
 ```
 ├── prisma/                 # Skema, migrasi, dan seed database Prisma
