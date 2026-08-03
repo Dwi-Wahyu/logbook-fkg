@@ -3,7 +3,6 @@
 import { useIsMobile } from "@/hooks/use-mobile";
 import LoginForm from "./LoginForm";
 import Image from "next/image";
-import { useTheme } from "next-themes";
 import { Fragment } from "react";
 
 function DesktopView() {

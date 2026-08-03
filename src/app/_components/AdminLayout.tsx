@@ -1,6 +1,5 @@
 "use client";
 
-import { ThemeToggle } from "@/components/theme-toggle";
 import {
   SidebarInset,
   SidebarProvider,
@@ -110,8 +109,6 @@ export default function ClientAdminLayout({
                 </BreadcrumbList>
               </Breadcrumb>
             </div>
-
-            <ThemeToggle />
           </header>
           <div className="p-5">{children}</div>
         </SidebarInset>
