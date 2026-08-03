@@ -42,11 +42,7 @@ export function NavUser({
   const router = useRouter();
 
   function handleLogout() {
-    signOut({
-      redirect: false,
-    });
-    router.push("/");
-    router.refresh();
+    signOut({ callbackUrl: "/", redirectTo: "/" });
   }
 
   return (
