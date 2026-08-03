@@ -1,17 +1,18 @@
 module.exports = {
   apps: [
     {
-      name: "logbook-fkg",
+      name: "logbook",
       script: "node_modules/next/dist/bin/next",
       args: "start",
-      interpreter: "bun", // Menggunakan Bun runtime untuk menghemat penggunaan memori
+      interpreter: "bun",
+      exec_mode: "fork",
+      instances: "1",
       autorestart: true,
       watch: false,
-      max_memory_restart: "500M",
+      max_memory_restart: "1G",
       env: {
         NODE_ENV: "production",
         PORT: 3000,
-        AUTH_TRUST_HOST: "true",
       },
     },
   ],
