@@ -37,26 +37,30 @@ export default function LoginForm() {
 
   async function onSubmit(values: TLoginSchema) {
     setLoading(true);
-    const res = await signIn("credentials", {
-      username: values.username,
-      password: values.password,
-      redirect: false,
-    });
+    try {
+      const res = await signIn("credentials", {
+        username: values.username,
+        password: values.password,
+        redirect: false,
+      });
 
-    if (res?.error) {
-      form.setError("username", {
-        type: "manual",
-        message: "Username atau Password salah",
-      });
-      form.setError("password", {
-        type: "manual",
-        message: "Username atau Password salah",
-      });
-    } else {
-      router.push("/admin/dashboard");
+      if (res?.error) {
+        form.setError("username", {
+          type: "manual",
+          message: "Username atau Password salah",
+        });
+        form.setError("password", {
+          type: "manual",
+          message: "Username atau Password salah",
+        });
+        setLoading(false);
+      } else {
+        window.location.href = "/admin/dashboard";
+      }
+    } catch (error) {
+      console.error("Login redirect error:", error);
+      window.location.href = "/admin/dashboard";
     }
-
-    setLoading(false);
   }
 
   return (

@@ -70,9 +70,17 @@ export const authConfig: NextAuthConfig = {
   },
   callbacks: {
     async redirect({ url, baseUrl }) {
-      if (url.startsWith("/")) return url;
-      if (url.startsWith(baseUrl)) return url;
-      return "/";
+      if (url.startsWith("/")) {
+        return `${baseUrl}${url}`;
+      }
+      try {
+        if (new URL(url).origin === new URL(baseUrl).origin) {
+          return url;
+        }
+      } catch {
+        // Ignore invalid URL
+      }
+      return `${baseUrl}/admin/dashboard`;
     },
     async session({ session, token }) {
       if (session.user) {
