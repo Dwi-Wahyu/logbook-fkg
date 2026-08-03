@@ -30,12 +30,14 @@ interface DosenDashboardClientProps {
   jumlahMahasiswaBimbingan: number;
   totalMahasiswaProgramStudi: number;
   kegiatanTrend: KegiatanTrendData[];
+  rataRataWaktuRespon?: string;
 }
 
 export default function DosenDashboardClient({
   jumlahMahasiswaBimbingan,
   totalMahasiswaProgramStudi,
   kegiatanTrend,
+  rataRataWaktuRespon = "-",
 }: DosenDashboardClientProps) {
   return (
     <div className="mt-8 space-y-8">
@@ -43,7 +45,7 @@ export default function DosenDashboardClient({
       <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
         <DashboardCard
           icon={Users}
-          title="Mahasiswa Bimbingan Anda"
+          title="Mahasiswa Bimbingan"
           value={jumlahMahasiswaBimbingan}
           description={`Dari ${totalMahasiswaProgramStudi} mahasiswa di Program Studi Anda.`}
           accentColorClass="text-blue-500"
@@ -61,7 +63,7 @@ export default function DosenDashboardClient({
         <DashboardCard
           icon={Clock}
           title="Rata-rata Waktu Respon"
-          value="Segera Hadir" // Placeholder, perlu logika tambahan untuk menghitung ini
+          value={rataRataWaktuRespon}
           description="Rata-rata waktu Anda merespon pengajuan."
           accentColorClass="text-orange-500"
         />

@@ -113,6 +113,11 @@ export async function getDashboardData(userId: string, userRole: string) {
     }
   }
 
+  let rataRataWaktuRespon = "-";
+  if (userRole === "DOSEN") {
+    rataRataWaktuRespon = await getRataRataWaktuResponDosen(userId);
+  }
+
   return {
     jumlahMahasiswa,
     jumlahDosen,
@@ -123,7 +128,93 @@ export async function getDashboardData(userId: string, userRole: string) {
     kegiatanStatusDistribution,
     userRole,
     totalMahasiswaProgramStudi,
+    rataRataWaktuRespon,
   };
+}
+
+export async function getRataRataWaktuResponDosen(
+  dosenPenggunaId: string
+): Promise<string> {
+  const approvals = await prisma.approval.findMany({
+    where: {
+      penggunaId: dosenPenggunaId,
+    },
+    select: {
+      createdAt: true,
+      updatedAt: true,
+      kegiatan: {
+        select: {
+          createdAt: true,
+        },
+      },
+    },
+  });
+
+  if (approvals.length > 0) {
+    const totalDurationMs = approvals.reduce((acc, app) => {
+      const responseTime = new Date(app.updatedAt || app.createdAt).getTime();
+      const submissionTime = new Date(app.kegiatan.createdAt).getTime();
+      const duration = responseTime - submissionTime;
+      return acc + Math.max(0, duration);
+    }, 0);
+
+    const avgMs = totalDurationMs / approvals.length;
+    return formatDurationString(avgMs);
+  }
+
+  // Fallback: search for responded activities under their bimbingan
+  const dosen = await prisma.dosen.findUnique({
+    where: { penggunaId: dosenPenggunaId },
+    select: { id: true },
+  });
+
+  if (!dosen) return "-";
+
+  const respondedKegiatan = await prisma.kegiatan.findMany({
+    where: {
+      logbook: { mahasiswa: { pembimbingId: dosen.id } },
+      status: { in: ["DISETUJUI", "DITOLAK"] },
+    },
+    select: {
+      createdAt: true,
+      updatedAt: true,
+    },
+  });
+
+  if (respondedKegiatan.length === 0) return "-";
+
+  const totalDurationMs = respondedKegiatan.reduce((acc, keg) => {
+    const duration =
+      new Date(keg.updatedAt).getTime() - new Date(keg.createdAt).getTime();
+    return acc + Math.max(0, duration);
+  }, 0);
+
+  const avgMs = totalDurationMs / respondedKegiatan.length;
+  return formatDurationString(avgMs);
+}
+
+function formatDurationString(ms: number): string {
+  if (isNaN(ms) || ms <= 0) return "< 1 Menit";
+
+  const minutes = Math.floor(ms / (1000 * 60));
+  const hours = Math.floor(minutes / 60);
+  const days = Math.floor(hours / 24);
+
+  if (days >= 1) {
+    const remainingHours = hours % 24;
+    return remainingHours > 0
+      ? `${days} Hari ${remainingHours} Jam`
+      : `${days} Hari`;
+  }
+
+  if (hours >= 1) {
+    const remainingMinutes = minutes % 60;
+    return remainingMinutes > 0
+      ? `${hours} Jam ${remainingMinutes} Menit`
+      : `${hours} Jam`;
+  }
+
+  return `${Math.max(1, minutes)} Menit`;
 }
 
 export async function getMahasiswaBimbinganPalingAktif(

@@ -81,6 +81,7 @@ export default async function DashboardInfo() {
           jumlahMahasiswaBimbingan={dashboardData.jumlahMahasiswaBimbingan}
           totalMahasiswaProgramStudi={dashboardData.totalMahasiswaProgramStudi}
           kegiatanTrend={dashboardData.kegiatanTrend}
+          rataRataWaktuRespon={dashboardData.rataRataWaktuRespon}
         />
       )}
 

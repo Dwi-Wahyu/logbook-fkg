@@ -19,17 +19,19 @@ export default function MahasiswaBimbinganAktifCard({
 }) {
   return (
     <Card className="mt-6">
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
+      <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle className="text-base font-bold text-gray-900 flex items-center gap-2">
           <Flame className="h-5 w-5 text-orange-500 fill-orange-500/20" />
           Mahasiswa Bimbingan Paling Aktif
         </CardTitle>
       </CardHeader>
-      <CardContent className="pt-2">
+      <CardContent>
         {mahasiswaList.length === 0 ? (
           <div className="flex flex-col items-center justify-center p-6 text-center text-muted-foreground">
             <Users className="h-10 w-10 mb-2 opacity-40" />
-            <p className="text-sm font-medium">Belum ada mahasiswa bimbingan yang aktif.</p>
+            <p className="text-sm font-medium">
+              Belum ada mahasiswa bimbingan yang aktif.
+            </p>
           </div>
         ) : (
           <div className="space-y-4">
@@ -40,7 +42,11 @@ export default function MahasiswaBimbinganAktifCard({
               >
                 <Avatar className="h-10 w-10 rounded-full border shrink-0">
                   <AvatarImage
-                    src={mhs.avatar ? `/image/profile-picture/${mhs.avatar}` : undefined}
+                    src={
+                      mhs.avatar
+                        ? `/image/profile-picture/${mhs.avatar}`
+                        : undefined
+                    }
                     alt={mhs.nama}
                   />
                   <AvatarFallback className="rounded-full bg-primary/10 text-primary font-semibold text-xs">
