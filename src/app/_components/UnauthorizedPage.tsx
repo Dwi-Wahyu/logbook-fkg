@@ -10,7 +10,9 @@ export default function UnauthorizedPage() {
   const router = useRouter();
 
   function handleLogout() {
-    signOut({ callbackUrl: "/", redirectTo: "/" });
+    signOut({ redirect: false }).finally(() => {
+      window.location.href = "/";
+    });
   }
 
   return (

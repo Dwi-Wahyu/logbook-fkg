@@ -5,7 +5,9 @@ import { signOut } from "next-auth/react";
 
 export default function LogoutPage() {
   useEffect(() => {
-    signOut({ callbackUrl: "/", redirectTo: "/" });
+    signOut({ redirect: false }).finally(() => {
+      window.location.href = "/";
+    });
   }, []);
 
   return (

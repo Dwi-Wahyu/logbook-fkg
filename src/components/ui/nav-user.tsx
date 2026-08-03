@@ -42,7 +42,9 @@ export function NavUser({
   const router = useRouter();
 
   function handleLogout() {
-    signOut({ callbackUrl: "/", redirectTo: "/" });
+    signOut({ redirect: false }).finally(() => {
+      window.location.href = "/";
+    });
   }
 
   return (
