@@ -98,7 +98,7 @@ export default function PengajuanBimbinganForm({
   // useQueryState here unless you want to sync this specific select with the URL on client-side changes.
   const [idPembimbing, setIdPembimbing] = useQueryState(
     "dosenId",
-    parseAsString.withDefault(dosenId ?? "") // Use "" for default to match SelectItem value=""
+    parseAsString.withDefault(dosenId ?? ""), // Use "" for default to match SelectItem value=""
   );
 
   // Memoize `canCreatePengajuan` to avoid recalculations if dependencies don't change
@@ -111,7 +111,7 @@ export default function PengajuanBimbinganForm({
 
     // Check if there's any pending application (status "TERKIRIM")
     const hasPendingApplication = sejarahPengajuan.some(
-      (entry) => entry.status === "TERKIRIM"
+      (entry) => entry.status === "TERKIRIM",
     );
 
     return !hasPendingApplication;
@@ -181,24 +181,13 @@ export default function PengajuanBimbinganForm({
   return (
     <div className="grid gap-5 grid-cols-1 md:grid-cols-2">
       <Card className="shadow-lg rounded-xl">
-        <CardHeader className="border-b">
-          <CardTitle className="text-2xl font-bold">
-            Form Pengajuan Bimbingan
-          </CardTitle>
-          <CardDescription className="text-gray-600">
-            Ajukan permohonan bimbingan kepada dosen pilihan Anda.
-          </CardDescription>
-        </CardHeader>
-
         <CardContent>
           {!canCreatePengajuan && (
             <Alert variant="destructive" className="mb-6 rounded-md">
               <CircleAlert className="h-5 w-5" />
               <AlertTitle className="font-bold text-lg">Perhatian!</AlertTitle>
               <AlertDescription className="text-base">
-                Anda tidak dapat membuat pengajuan bimbingan baru saat ini. Ini
-                mungkin karena Anda sudah memiliki pembimbing atau ada
-                permohonan yang masih dalam status 'TERKIRIM'.
+                Anda tidak dapat membuat pengajuan bimbingan baru saat ini.
               </AlertDescription>
             </Alert>
           )}
@@ -308,7 +297,7 @@ export default function PengajuanBimbinganForm({
                                     Diajukan:{" "}
                                     {format(
                                       new Date(sejarah.createdAt),
-                                      "dd MMMM yyyy HH:mm"
+                                      "dd MMMM yyyy HH:mm",
                                     )}
                                   </p>
                                 </div>
@@ -381,7 +370,7 @@ export default function PengajuanBimbinganForm({
                                     Diajukan:{" "}
                                     {format(
                                       new Date(sejarah.createdAt),
-                                      "dd MMMM yyyy HH:mm"
+                                      "dd MMMM yyyy HH:mm",
                                     )}
                                   </p>
                                 </div>

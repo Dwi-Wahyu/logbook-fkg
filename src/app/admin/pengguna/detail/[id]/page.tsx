@@ -30,7 +30,7 @@ import {
 } from "@/app/_lib/queries/penggunaQueries";
 import MahasiswaKegiatanProgress from "@/app/_components/pengguna/MahasiswaKegiatanProgress";
 import JenisKegiatanTable from "@/app/_components/pengguna/JenisKegiatanPenggunaTable";
-import { getProgramStudiById } from "@/app/_lib/queries/programStudiQueries";
+import { getProgramStudiById, getJenisKegiatanWithCounts } from "@/app/_lib/queries/programStudiQueries";
 
 export default async function DetailPengguna({
   params,
@@ -40,18 +40,28 @@ export default async function DetailPengguna({
   const { id } = await params;
   const session = await auth();
 
-  // Fetch data secara paralel
-  const [dataPengguna, allDosen] = await Promise.all([
-    getDetailPengguna(id),
-    getAllDosen(), // Fetch all dosen for the supervisor selection
-  ]);
+  const dataPengguna = await getDetailPengguna(id);
 
   if (!dataPengguna) {
-    return <h1>Pengguna tidak ditemukan</h1>;
+    return <h1>Data Pengguna tidak ditemukan</h1>;
   }
 
-  const isDosen = dataPengguna.peran === "DOSEN";
   const isMahasiswa = dataPengguna.peran === "MAHASISWA";
+  const isDosen = dataPengguna.peran === "DOSEN";
+
+  const allDosen = isMahasiswa ? await getAllDosen() : [];
+
+  const programStudiData = isMahasiswa
+    ? await getProgramStudiById(dataPengguna.programStudiId)
+    : null;
+
+  const jenisKegiatanList = isMahasiswa
+    ? await getJenisKegiatanWithCounts({
+        programStudiId: dataPengguna.programStudiId,
+        penggunaId: dataPengguna.id,
+        peran: dataPengguna.peran,
+      })
+    : [];
 
   const isViewerDPJP =
     session?.user.id === dataPengguna.mahasiswa?.pembimbing?.pengguna.id;
@@ -64,10 +74,6 @@ export default async function DetailPengguna({
       dataPengguna.mahasiswa.id
     );
   }
-
-  const programStudiData = await getProgramStudiById(
-    dataPengguna.programStudiId
-  );
 
   return (
     <Suspense fallback={<Skeleton className="w-full h-40" />}>
@@ -202,8 +208,9 @@ export default async function DetailPengguna({
             </div>
 
             <JenisKegiatanTable
-              initialJenisKegiatanList={programStudiData?.jenisKegiatan ?? []}
+              initialJenisKegiatanList={jenisKegiatanList}
               idPengguna={dataPengguna.id}
+              peran={dataPengguna.peran}
             />
           </CardContent>
         </Card>

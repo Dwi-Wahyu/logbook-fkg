@@ -60,13 +60,13 @@ export default async function DashboardInfo() {
           <>
             <DashboardCard
               icon={NotebookText}
-              title="Total Pengajuan Kegiatan"
+              title="Total Pengajuan"
               value={dashboardData.jumlahPengajuan}
               accentColorClass="text-green-500"
             />
             <DashboardCard
               icon={UserSearch}
-              title="Pengajuan Belum Disetujui"
+              title="Belum Disetujui"
               value={dashboardData.jumlahPengajuanBelumDisetujui}
               accentColorClass="text-orange-500"
             />
@@ -89,11 +89,6 @@ export default async function DashboardInfo() {
           <h2 className="text-2xl font-bold text-gray-800 mb-4">
             Dashboard Admin/Superadmin
           </h2>
-          <Card className="p-6 shadow-lg rounded-xl">
-            <p className="text-gray-600">
-              Konten dashboard untuk Admin/Superadmin akan datang.
-            </p>
-          </Card>
         </div>
       )}
     </Suspense>

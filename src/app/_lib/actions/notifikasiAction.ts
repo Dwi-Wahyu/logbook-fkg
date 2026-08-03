@@ -13,6 +13,7 @@ type TFindAllNotifikasi = {
   penggunaId: string;
   dibaca?: boolean;
   limit?: number;
+  page?: number;
 };
 
 export async function createNotifikasi(payload: TCreateNotifikasi) {
@@ -40,28 +41,49 @@ export async function createNotifikasi(payload: TCreateNotifikasi) {
 
 export async function findAllNotifikasi(params: TFindAllNotifikasi) {
   try {
+    const page = params.page && params.page > 0 ? params.page : 1;
+    const limit = params.limit;
+    const skip = limit ? (page - 1) * limit : undefined;
+
     const whereClause = {
       penggunaId: params.penggunaId,
       ...(params.dibaca !== undefined && { dibaca: params.dibaca }),
     };
 
-    const notifikasi = await prisma.notifikasi.findMany({
-      where: whereClause,
-      orderBy: {
-        createdAt: "desc",
-      },
-      take: params.limit,
-    });
+    const [notifikasi, totalCount] = await Promise.all([
+      prisma.notifikasi.findMany({
+        where: whereClause,
+        orderBy: {
+          createdAt: "desc",
+        },
+        take: limit,
+        skip: skip,
+      }),
+      prisma.notifikasi.count({
+        where: whereClause,
+      }),
+    ]);
+
+    const pageCount = limit ? Math.ceil(totalCount / limit) : 1;
 
     return {
       success: true,
       data: notifikasi,
+      totalCount,
+      pageCount,
+      currentPage: page,
+      limit: limit ?? totalCount,
     };
   } catch (error) {
     console.error("Gagal mengambil notifikasi:", error);
     return {
       success: false,
       error: "Gagal mengambil notifikasi",
+      data: [],
+      totalCount: 0,
+      pageCount: 1,
+      currentPage: 1,
+      limit: 10,
     };
   }
 }
@@ -72,6 +94,7 @@ export async function hapusNotifikasi(id: string) {
   });
 
   revalidatePath("/admin/dashboard");
+  revalidatePath("/admin/notifikasi");
 
   return {
     success: true,

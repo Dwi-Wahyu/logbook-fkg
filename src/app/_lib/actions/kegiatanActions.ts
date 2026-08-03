@@ -83,6 +83,11 @@ export async function tambahKegiatan(payload: TTambahKegiatan) {
       select: {
         id: true,
         pengguna: { select: { nama: true, programStudiId: true } },
+        pembimbing: {
+          select: {
+            penggunaId: true,
+          },
+        },
       },
     });
     if (!mahasiswa)
@@ -278,11 +283,13 @@ export async function tambahKegiatan(payload: TTambahKegiatan) {
             .get(fv.jenisKegiatanFieldId)
             ?.templateKey?.toLowerCase() === "judul"
       )?.value || jenisKegiatan.nama;
-    createNotifikasi({
-      judul: "Pengajuan Kegiatan Baru",
-      penggunaId: pengajuId, // Gunakan pengajuId yang sudah didapatkan
-      pesan: `Mahasiswa ${mahasiswa.pengguna.nama} mengajukan kegiatan "${judulKegiatanFromFields}". Mohon direview.`,
-    });
+    if (mahasiswa.pembimbing?.penggunaId) {
+      createNotifikasi({
+        judul: "Pengajuan Kegiatan Baru",
+        penggunaId: mahasiswa.pembimbing.penggunaId,
+        pesan: `Mahasiswa ${mahasiswa.pengguna.nama} mengajukan kegiatan "${judulKegiatanFromFields}". Mohon direview.`,
+      });
+    }
 
     return {
       success: true,
@@ -546,6 +553,8 @@ export async function updateKegiatanStatus(payload: TUpdateStatusKegiatan) {
   const { kegiatanId, status, alasanDitolak } = validationResult.data;
 
   try {
+    const session = await auth();
+
     const updatedKegiatan = await prisma.kegiatan.update({
       where: { id: kegiatanId },
       data: {
@@ -570,6 +579,25 @@ export async function updateKegiatanStatus(payload: TUpdateStatusKegiatan) {
         },
       },
     });
+
+    if (session?.user?.id) {
+      await prisma.approval.upsert({
+        where: {
+          kegiatanId_penggunaId: {
+            kegiatanId,
+            penggunaId: session.user.id,
+          },
+        },
+        create: {
+          kegiatanId,
+          penggunaId: session.user.id,
+          status,
+        },
+        update: {
+          status,
+        },
+      });
+    }
 
     const pengajuId = updatedKegiatan.logbook.mahasiswa?.pengguna.id;
     const pengajuNama = updatedKegiatan.logbook.mahasiswa?.pengguna.nama; // Dapatkan nama pengaju

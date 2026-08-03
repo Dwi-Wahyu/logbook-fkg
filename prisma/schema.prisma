@@ -27,6 +27,7 @@ model Pengguna {
   // Relasi balik dari ketua (opsional satu-satu)
   ketuaiProgramStudi ProgramStudi? @relation("KetuaProgramStudi")
   Catatan            Catatan[]
+  approvals          Approval[]
 
   @@map("pengguna")
 }
@@ -99,12 +100,27 @@ model Kegiatan {
   createdAt       DateTime              @default(now())
   updatedAt       DateTime              @updatedAt
   Catatan         Catatan[]
+  approvals Approval[]
 
   @@map("kegiatan")
 }
 
+model Approval {
+  id         String   @id @default(nanoid())
+  kegiatanId String
+  kegiatan   Kegiatan @relation(fields: [kegiatanId], references: [id], onDelete: Cascade)
+  penggunaId String
+  pengguna   Pengguna @relation(fields: [penggunaId], references: [id], onDelete: Cascade)
+  status     String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@unique([kegiatanId, penggunaId])
+  @@map("approval")
+}
+
 model Catatan {
-  id         String   @id @default(uuid())
+  id         String   @id @default(nanoid())
   kegiatanId String
   kegiatan   Kegiatan @relation(fields: [kegiatanId], references: [id], onDelete: Cascade)
   penggunaId String
@@ -131,7 +147,7 @@ model MataKuliah {
 }
 
 model Lampiran {
-  id         String   @id @default(uuid())
+  id         String   @id @default(nanoid())
   kegiatanId String
   kegiatan   Kegiatan @relation(fields: [kegiatanId], references: [id], onDelete: Cascade)
   namaFile   String
@@ -143,7 +159,7 @@ model Lampiran {
 }
 
 model PermohonanBimbingan {
-  id            String    @id @default(uuid())
+  id            String    @id @default(cuid())
   mahasiswaId   String
   mahasiswa     Mahasiswa @relation(fields: [mahasiswaId], references: [id], onDelete: Cascade)
   dosenId       String
@@ -158,7 +174,7 @@ model PermohonanBimbingan {
 }
 
 model Notifikasi {
-  id         String   @id @default(uuid())
+  id         String   @id @default(ulid())
   penggunaId String
   pengguna   Pengguna @relation(fields: [penggunaId], references: [id], onDelete: Cascade)
   judul      String
@@ -203,7 +219,7 @@ model JenisKegiatan {
 }
 
 model JenisKegiatanField {
-  id              String                @id @default(uuid())
+  id              String                @id @default(nanoid())
   jenisKegiatanId String
   jenisKegiatan   JenisKegiatan         @relation(fields: [jenisKegiatanId], references: [id], onDelete: Cascade)
   fieldName       String
@@ -221,7 +237,7 @@ model JenisKegiatanField {
 }
 
 model FieldKegiatanValues {
-  id                   String             @id @default(uuid())
+  id                   String             @id @default(nanoid())
   kegiatanId           String
   kegiatan             Kegiatan           @relation(fields: [kegiatanId], references: [id], onDelete: Cascade)
   jenisKegiatanFieldId String
@@ -235,7 +251,7 @@ model FieldKegiatanValues {
 }
 
 model RiwayatPerubahanPembimbing {
-  id               String    @id @default(uuid())
+  id               String    @id @default(nanoid())
   mahasiswaId      String
   mahasiswa        Mahasiswa @relation(fields: [mahasiswaId], references: [id], onDelete: Cascade)
   alasan           String

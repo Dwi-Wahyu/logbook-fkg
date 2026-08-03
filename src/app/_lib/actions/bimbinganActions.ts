@@ -232,6 +232,11 @@ export async function tanggapiPermohonan(
         alasanDitolak,
       },
       include: {
+        mahasiswa: {
+          select: {
+            penggunaId: true,
+          },
+        },
         dosen: {
           select: {
             pengguna: {
@@ -243,6 +248,8 @@ export async function tanggapiPermohonan(
         },
       },
     });
+
+    const targetPenggunaId = query.mahasiswa?.penggunaId ?? "";
 
     if (statusPermohonan === "DISETUJUI") {
       const updatePengguna = await prisma.mahasiswa.update({
@@ -256,7 +263,7 @@ export async function tanggapiPermohonan(
 
       createNotifikasi({
         judul: `Persetujuan Permohonan Bimbingan`,
-        penggunaId: query.mahasiswaId ?? "",
+        penggunaId: targetPenggunaId,
         pesan: `Permohonan bimbingan Anda dengan ${query.dosen?.pengguna.nama} telah disetujui. Silakan koordinasikan jadwal bimbingan lebih lanjut.`,
       });
 
@@ -264,7 +271,7 @@ export async function tanggapiPermohonan(
     } else {
       createNotifikasi({
         judul: "Status Permohonan Bimbingan",
-        penggunaId: query.mahasiswaId ?? "",
+        penggunaId: targetPenggunaId,
         pesan: `Mohon maaf, permohonan bimbingan Anda dengan ${query.dosen?.pengguna.nama} tidak dapat disetujui. Alasan: ${alasanDitolak}. Silakan ajukan permohonan baru atau konsultasikan dengan bagian akademik.`,
       });
     }

@@ -66,7 +66,7 @@ export default function MahasiswaDashboardClient({
         />
         <DashboardCard
           icon={NotebookText}
-          title="Total Pengajuan Kegiatan Anda"
+          title="Total Pengajuan"
           value={jumlahPengajuan}
           description="Jumlah kegiatan yang Anda ajukan."
           accentColorClass="text-green-500"

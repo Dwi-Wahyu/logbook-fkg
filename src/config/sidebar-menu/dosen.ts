@@ -1,6 +1,7 @@
 import { SidebarMenu } from "@/types/sidebar";
 import {
   Activity,
+  Bell,
   BookType,
   FileUser,
   LayoutDashboard,

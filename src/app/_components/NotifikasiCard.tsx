@@ -6,7 +6,8 @@ import {
   hapusNotifikasi,
 } from "../_lib/actions/notifikasiAction";
 import { Fragment, useState } from "react";
-import { Bell, X } from "lucide-react";
+import { Bell, X, ArrowRight } from "lucide-react";
+import Link from "next/link";
 
 export default function NotifikasiCard({
   allNotifikasi,
@@ -21,8 +22,14 @@ export default function NotifikasiCard({
     <Card className="mt-6">
       {allNotifikasi.data?.length ? (
         <Fragment>
-          <CardHeader>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0">
             <CardTitle>Notifikasi Anda</CardTitle>
+            <Link
+              href="/admin/notifikasi"
+              className="text-xs text-primary font-medium hover:underline flex items-center gap-1"
+            >
+              Lihat Semua <ArrowRight className="h-3 w-3" />
+            </Link>
           </CardHeader>
           <CardContent className="flex flex-col gap-2">
             {allNotifikasi.data?.map((notif) => (
@@ -45,8 +52,11 @@ export default function NotifikasiCard({
           </CardContent>
         </Fragment>
       ) : (
-        <CardContent className="flex flex-col gap-2 items-center justify-center">
+        <CardContent className="flex flex-col gap-2 items-center justify-center h-full">
           <h1 className="font-semibold">Belum Ada Notifikasi Terbaru</h1>
+          <h1 className="text-muted-foreground">
+            Anda tidak memiliki notifikasi baru saat ini.
+          </h1>
 
           <Bell width={70} height={70} />
         </CardContent>

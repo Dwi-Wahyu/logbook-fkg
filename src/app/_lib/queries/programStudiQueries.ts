@@ -138,3 +138,64 @@ export async function getJenisKegiatanByProgramStudiId(
 
   return jenisKegiatanList;
 }
+
+export async function getJenisKegiatanWithCounts({
+  programStudiId,
+  penggunaId,
+  peran,
+}: {
+  programStudiId?: string | null;
+  penggunaId?: string | null;
+  peran?: string | null;
+}) {
+  const whereJenis: Prisma.JenisKegiatanWhereInput =
+    peran !== "SUPERADMIN" && programStudiId
+      ? { programStudiId }
+      : {};
+
+  const jenisKegiatanList = await prisma.jenisKegiatan.findMany({
+    where: whereJenis,
+    orderBy: { nama: "asc" },
+    include: {
+      programStudi: {
+        select: { nama: true, displayName: true },
+      },
+      fields: {
+        orderBy: { order: "asc" },
+      },
+    },
+  });
+
+  const result = await Promise.all(
+    jenisKegiatanList.map(async (jk) => {
+      let kegiatanWhere: Prisma.KegiatanWhereInput = {
+        jenisKegiatanId: jk.id,
+      };
+
+      if (peran === "MAHASISWA" && penggunaId) {
+        kegiatanWhere.logbook = {
+          penggunaId: penggunaId,
+        };
+      } else if ((peran === "DOSEN" || peran === "ADMIN") && programStudiId) {
+        kegiatanWhere.logbook = {
+          mahasiswa: {
+            pengguna: {
+              programStudiId: programStudiId,
+            },
+          },
+        };
+      }
+
+      const jumlahKegiatan = await prisma.kegiatan.count({
+        where: kegiatanWhere,
+      });
+
+      return {
+        ...jk,
+        jumlahKegiatan,
+      };
+    })
+  );
+
+  return result;
+}

@@ -4,7 +4,7 @@ import { readFileSync, statSync } from "fs";
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: Promise<{ path: string[] }> } // Use Promise for params
+  { params }: { params: Promise<{ path: string[] }> }, // Use Promise for params
 ) {
   try {
     // Await params to get the path array
@@ -35,7 +35,7 @@ export async function GET(
     console.error("Error serving file:", error);
     return NextResponse.json(
       { error: "Internal server error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

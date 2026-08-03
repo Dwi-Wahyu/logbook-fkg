@@ -1,22 +1,15 @@
 import JenisKegiatanPenggunaTable from "@/app/_components/pengguna/JenisKegiatanPenggunaTable";
 import UnauthorizedPage from "@/app/_components/UnauthorizedPage";
 import { getDetailPengguna } from "@/app/_lib/queries/penggunaQueries";
-import { getProgramStudiById } from "@/app/_lib/queries/programStudiQueries";
-import { Card, CardContent, CardTitle } from "@/components/ui/card";
+import { getJenisKegiatanWithCounts } from "@/app/_lib/queries/programStudiQueries";
 import { auth } from "@/config/auth";
 import { CircleDashed } from "lucide-react";
 
 export default async function ProgressKegiatanMahasiswa() {
   const session = await auth();
 
-  if (!session) {
+  if (!session || !session.user || !session.user.id) {
     return <UnauthorizedPage />;
-  }
-
-  const isMahasiswa = session?.user.peran === "MAHASISWA";
-
-  if (!isMahasiswa) {
-    return <h1>Halaman ini hanya untuk mahasiswa</h1>;
   }
 
   const dataPengguna = await getDetailPengguna(session.user.id);
@@ -25,24 +18,35 @@ export default async function ProgressKegiatanMahasiswa() {
     return <UnauthorizedPage />;
   }
 
-  const programStudiData = await getProgramStudiById(
-    session.user.programStudiId
-  );
+  const peran = session.user.peran;
+
+  const jenisKegiatanList = await getJenisKegiatanWithCounts({
+    programStudiId: session.user.programStudiId,
+    penggunaId: session.user.id,
+    peran: peran,
+  });
+
+  const titleText =
+    peran === "MAHASISWA"
+      ? "Progress Kegiatan Anda"
+      : peran === "SUPERADMIN"
+        ? "Progress Seluruh Kegiatan Mahasiswa"
+        : "Progress Kegiatan Mahasiswa Program Studi";
 
   return (
-    <Card>
-      <CardContent>
-        <div className="flex mb-4 gap-2 items-center">
-          <CircleDashed className="h-5 w-5" />
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-2xl font-bold text-gray-900">{titleText}</h1>
+        <p className="text-sm text-muted-foreground mt-0.5">
+          Pilih jenis kegiatan di bawah untuk melihat rincian kegiatan.
+        </p>
+      </div>
 
-          <CardTitle>Lihat Progress Kegiatan Anda</CardTitle>
-        </div>
-
-        <JenisKegiatanPenggunaTable
-          initialJenisKegiatanList={programStudiData?.jenisKegiatan ?? []}
-          idPengguna={dataPengguna.id}
-        />
-      </CardContent>
-    </Card>
+      <JenisKegiatanPenggunaTable
+        initialJenisKegiatanList={jenisKegiatanList}
+        idPengguna={dataPengguna.id}
+        peran={peran}
+      />
+    </div>
   );
 }

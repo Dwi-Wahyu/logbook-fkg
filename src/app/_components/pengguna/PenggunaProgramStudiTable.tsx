@@ -70,20 +70,20 @@ export default function PenggunaProgramStudiTable({
   const [page, setPage] = useQueryState("page", parseAsInteger.withDefault(1));
   const [perPage, setPerPage] = useQueryState(
     "perPage",
-    parseAsInteger.withDefault(10)
+    parseAsInteger.withDefault(10),
   );
   const [nama, setNama] = useQueryState("nama", parseAsString.withDefault(""));
   const [username, setUsername] = useQueryState(
     "username",
-    parseAsString.withDefault("")
+    parseAsString.withDefault(""),
   );
   const [angkatan, setAngkatan] = useQueryState(
     "angkatan",
-    parseAsString.withDefault("")
+    parseAsString.withDefault(""),
   );
   const [peran, setPeran] = useQueryState(
     "peran",
-    parseAsStringEnum(roles).withOptions({ clearOnDefault: true })
+    parseAsStringEnum(roles).withOptions({ clearOnDefault: true }),
   );
 
   // Synchronize internal state with initial props when they change (e.g., after server re-fetch)
@@ -130,7 +130,7 @@ export default function PenggunaProgramStudiTable({
 
   const handleDeletePengguna = async (penggunaId: string) => {
     const confirmed = window.confirm(
-      "Apakah Anda yakin ingin menghapus pengguna ini?"
+      "Apakah Anda yakin ingin menghapus pengguna ini?",
     ); // Replace with custom modal
     if (confirmed) {
       // Implement delete action here (e.g., call a server action `deletePengguna(penggunaId)`)
@@ -194,9 +194,7 @@ export default function PenggunaProgramStudiTable({
             disabled={isPending}
             className="w-full sm:w-auto bg-primary hover:bg-primary/90 text-primary-foreground transition-colors"
           >
-            {isPending ? (
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            ) : null}
+            {isPending ? <Loader2 className="animate-spin" /> : null}
             Terapkan Filter
           </Button>
         </div>

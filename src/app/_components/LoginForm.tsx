@@ -3,7 +3,7 @@
 import { loginSchema, TLoginSchema } from "@/schema/LoginSchema";
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Loader2, LogIn } from "lucide-react";
+import { Eye, EyeOff, Loader2, LogIn } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -26,6 +26,7 @@ export default function LoginForm() {
   const router = useRouter();
 
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const form = useForm<TLoginSchema>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
@@ -59,7 +60,7 @@ export default function LoginForm() {
   }
 
   return (
-    <div className="flex h-full w-full flex-col px-7 md:justify-center">
+    <div className="flex h-full w-full flex-col justify-center px-7 relative">
       <div className="flex absolute top-7 left-7 gap-2 items-center h-fit">
         <Image src="/logo-unhas.png" width={40} height={30} alt="logo-unhas" />
         <div>
@@ -108,11 +109,31 @@ export default function LoginForm() {
                   <FormItem>
                     <FormLabel>Password</FormLabel>
                     <FormControl>
-                      <Input
-                        placeholder="Tolong Ketik Password"
-                        type="password"
-                        {...field}
-                      />
+                      <div className="relative">
+                        <Input
+                          placeholder="Tolong Ketik Password"
+                          type={showPassword ? "text" : "password"}
+                          className="pr-10"
+                          {...field}
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowPassword((prev) => !prev)}
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground focus:outline-none"
+                          tabIndex={-1}
+                          aria-label={
+                            showPassword
+                              ? "Sembunyikan password"
+                              : "Tampilkan password"
+                          }
+                        >
+                          {showPassword ? (
+                            <EyeOff className="h-4 w-4" />
+                          ) : (
+                            <Eye className="h-4 w-4" />
+                          )}
+                        </button>
+                      </div>
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -121,11 +142,7 @@ export default function LoginForm() {
 
               <div className="flex flex-col mt-7 items-center justify-center">
                 <Button type="submit" size={"lg"} disabled={loading}>
-                  {loading ? (
-                    <Loader2 className="animate-spin mr-2" />
-                  ) : (
-                    <LogIn />
-                  )}
+                  {loading ? <Loader2 className="animate-spin" /> : <LogIn />}
                   Login
                 </Button>
               </div>

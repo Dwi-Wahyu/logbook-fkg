@@ -1,33 +1,30 @@
-import { ProgramStudiWithJenisKegiatan } from "@/app/_lib/queries/programStudiQueries";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import {
-  CheckCircle2,
-  Edit,
-  Eye,
-  LayoutGrid,
-  Loader2,
-  Trash2,
-  XCircle,
-} from "lucide-react";
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Eye, LayoutGrid } from "lucide-react";
 import Link from "next/link";
 
+export type JenisKegiatanWithCountItem = {
+  id: string;
+  nama: string;
+  programStudiId: string;
+  jumlahKegiatan: number;
+};
+
 interface JenisKegiatanManagementProps {
-  initialJenisKegiatanList: ProgramStudiWithJenisKegiatan["jenisKegiatan"];
+  initialJenisKegiatanList: JenisKegiatanWithCountItem[];
   idPengguna: string;
+  peran?: string;
 }
 
 export default function JenisKegiatanPenggunaTable({
   initialJenisKegiatanList,
   idPengguna,
+  peran = "MAHASISWA",
 }: JenisKegiatanManagementProps) {
   return (
     <>
@@ -37,61 +34,42 @@ export default function JenisKegiatanPenggunaTable({
           <p className="text-lg font-medium">
             Belum ada Jenis Kegiatan yang ditambahkan.
           </p>
-          <p className="text-sm">
-            Silakan tambahkan jenis kegiatan baru di atas.
-          </p>
         </div>
       ) : (
-        <div className="relative w-full overflow-auto rounded-lg border border-gray-200 shadow-sm">
-          <Table className="min-w-full bg-white">
-            <TableHeader>
-              <TableRow className="bg-gray-50 border-b border-gray-200">
-                <TableHead className="w-[50px] font-bold text-gray-700">
-                  No
-                </TableHead>
-                <TableHead className="font-bold text-gray-700">
-                  Nama Jenis Kegiatan
-                </TableHead>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+          {initialJenisKegiatanList.map((jenisKegiatan) => {
+            const detailUrl =
+              peran === "MAHASISWA"
+                ? `/admin/kegiatan/progress/${jenisKegiatan.id}/${idPengguna}`
+                : `/admin/kegiatan?jenisKegiatanId=${jenisKegiatan.id}`;
 
-                <TableHead className="text-center font-bold text-gray-700">
-                  Aksi
-                </TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {initialJenisKegiatanList.map((jenisKegiatan, index) => (
-                <TableRow
-                  key={jenisKegiatan.id}
-                  className="hover:bg-gray-50 transition-colors"
-                >
-                  <TableCell className="font-medium text-gray-800">
-                    {index + 1}
-                  </TableCell>
-                  <TableCell className="text-gray-800">
+            return (
+              <Card
+                key={jenisKegiatan.id}
+                className="shadow-sm hover:shadow-md transition-shadow rounded-xl border border-gray-200 flex flex-col justify-between"
+              >
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-sm font-semibold text-gray-900 leading-snug">
                     {jenisKegiatan.nama}
-                  </TableCell>
-
-                  <TableCell className="text-center">
-                    <div className="flex justify-center space-x-2">
-                      <Link
-                        href={`/admin/kegiatan/progress/${jenisKegiatan.id}/${idPengguna}`}
-                        passHref
-                      >
-                        <Button
-                          variant="outline"
-                          size="icon"
-                          className="p-2 rounded-md border-indigo-500 text-indigo-500 hover:bg-indigo-50 transition-colors"
-                        >
-                          <Eye className="h-4 w-4" />
-                          <span className="sr-only">Detail</span>
-                        </Button>
-                      </Link>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+                  </CardTitle>
+                  <p className="text-xs text-muted-foreground mt-2 font-medium">
+                    Jumlah Kegiatan: {jenisKegiatan.jumlahKegiatan}
+                  </p>
+                </CardHeader>
+                <CardContent className="pt-0">
+                  <Link href={detailUrl} passHref>
+                    <Button
+                      variant="outline"
+                      className="w-full flex items-center justify-center gap-2 border-indigo-500 text-indigo-600 hover:bg-indigo-50 hover:text-indigo-700 transition-colors"
+                    >
+                      <Eye className="h-4 w-4" />
+                      Lihat Progress
+                    </Button>
+                  </Link>
+                </CardContent>
+              </Card>
+            );
+          })}
         </div>
       )}
     </>

@@ -34,8 +34,8 @@ export default async function PengajuanBimbinganPage() {
   const dosenIdMahasiswa = dataPembimbing?.mahasiswa?.pembimbing?.id || null;
 
   return (
-    <div className="container mx-auto pb-8 px-4 sm:px-6 lg:px-8">
-      <h1 className="text-3xl font-bold text-gray-900 mb-6 text-center">
+    <div className="container">
+      <h1 className="text-3xl font-bold text-gray-900 mb-6">
         Pengajuan Bimbingan
       </h1>
       <Suspense fallback={<Skeleton className="w-full h-40 rounded-lg" />}>

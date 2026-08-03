@@ -1,5 +1,6 @@
 import { SidebarMenu } from "@/types/sidebar";
 import {
+  Bell,
   BookOpenCheck,
   BookType,
   LayoutDashboard,

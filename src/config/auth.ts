@@ -69,6 +69,11 @@ export const authConfig: NextAuthConfig = {
     signOut: "/logout",
   },
   callbacks: {
+    async redirect({ url, baseUrl }) {
+      if (url.startsWith("/")) return url;
+      if (url.startsWith(baseUrl)) return url;
+      return "/";
+    },
     async session({ session, token }) {
       if (session.user) {
         session.user.id = token.id as string;

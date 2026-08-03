@@ -136,12 +136,12 @@ export default function KegiatanDetailClient({
 
   const getFormattedFieldValue = (key: string): string => {
     let fieldValueEntry = kegiatan.fieldValues.find(
-      (fv) => fv.jenisKegiatanField.templateKey === key
+      (fv) => fv.jenisKegiatanField.templateKey === key,
     );
     if (!fieldValueEntry) {
       fieldValueEntry = kegiatan.fieldValues.find(
         (fv) =>
-          fv.jenisKegiatanField.fieldName?.toLowerCase() === key.toLowerCase()
+          fv.jenisKegiatanField.fieldName?.toLowerCase() === key.toLowerCase(),
       );
     }
     if (
@@ -154,31 +154,31 @@ export default function KegiatanDetailClient({
     }
     return formatValueBasedOnType(
       fieldValueEntry.value,
-      fieldValueEntry.jenisKegiatanField.fieldType
+      fieldValueEntry.jenisKegiatanField.fieldType,
     );
   };
 
+  const rawJudul = getFormattedFieldValue("judul");
   const judulKegiatan =
-    getFormattedFieldValue("judul") ||
-    kegiatan.jenisKegiatan.nama ||
-    "Judul Tidak Tersedia";
-  const lokasiKegiatan =
-    getFormattedFieldValue("lokasi") || "Lokasi Tidak Tersedia";
+    rawJudul && rawJudul !== "-"
+      ? rawJudul
+      : kegiatan.jenisKegiatan.nama || "Judul Tidak Tersedia";
+  const lokasiKegiatan = getFormattedFieldValue("lokasi");
 
   const isMahasiswaPengaju =
     session?.user.id === kegiatan.logbook.mahasiswa?.pengguna.id;
+  const isDosen = session?.user.peran === "DOSEN";
   const isDosenPembimbing =
     session?.user.id === kegiatan.logbook.mahasiswa?.pembimbing?.pengguna.id;
-  const isAdminOrSuperadmin =
-    session?.user.peran === "ADMIN" || session?.user.peran === "SUPERADMIN";
+  const isAdmin = session?.user.peran === "ADMIN";
 
   const canEditKegiatan = isMahasiswaPengaju && kegiatan.status === "DIAJUKAN";
-  // Hanya Dosen/Admin yang bisa menanggapi atau menambahkan catatan
-  const canTanggapiAtauCatat = isDosenPembimbing || isAdminOrSuperadmin;
+  // Superadmin tidak perlu approval, hanya Dosen dan Admin Prodi
+  const canTanggapiAtauCatat = isDosen || isDosenPembimbing || isAdmin;
 
   const handleUpdateStatus = async (
     newStatus: "DISETUJUI" | "DITOLAK",
-    alasanDitolak?: string
+    alasanDitolak?: string,
   ) => {
     setLoadingAction(true);
     const result = await updateKegiatanStatus({
@@ -191,9 +191,11 @@ export default function KegiatanDetailClient({
       toast.custom(() => (
         <CustomToast
           title={`Kegiatan Berhasil ${
-            newStatus === "DISETUJUI" ? "Disetujui" : "Ditolak"
+            newStatus === "DISETUJUI" ? "Di-approve" : "Ditolak"
           }`}
-          description={`Status kegiatan berhasil diubah menjadi ${newStatus}.`}
+          description={`Status kegiatan berhasil ${
+            newStatus === "DISETUJUI" ? "di-approve" : "ditolak"
+          }.`}
           variant="success"
           icon={
             newStatus === "DISETUJUI" ? (
@@ -204,12 +206,14 @@ export default function KegiatanDetailClient({
           }
         />
       ));
+      // Trigger instant update on client side & revalidate server components
+      window.dispatchEvent(new Event("approval-updated"));
       router.refresh();
     } else {
       toast.custom(() => (
         <CustomToast
           title={`Gagal ${
-            newStatus === "DISETUJUI" ? "Menyetujui" : "Menolak"
+            newStatus === "DISETUJUI" ? "Meng-approve" : "Menolak"
           } Kegiatan`}
           description={
             result.message || "Terjadi kesalahan saat memperbarui status."
@@ -250,7 +254,7 @@ export default function KegiatanDetailClient({
   };
 
   return (
-    <Card className="w-full shadow-lg max-w-4xl mx-auto rounded-xl">
+    <Card className="flex-4/6">
       <CardHeader className=" border-b pb-4">
         <div className="flex items-center justify-between mb-2">
           <Button
@@ -275,7 +279,7 @@ export default function KegiatanDetailClient({
               </Link>
             )}
 
-            {/* Response buttons for Dosen Pembimbing or Admin/Superadmin */}
+            {/* Response buttons for Dosen Pembimbing or Admin */}
             {canTanggapiAtauCatat && (
               <>
                 <Button
@@ -288,7 +292,7 @@ export default function KegiatanDetailClient({
                   ) : (
                     <CheckCircle className="h-4 w-4 mr-1" />
                   )}
-                  Setujui
+                  Approve
                 </Button>
                 <Button
                   onClick={handleReject}
@@ -310,18 +314,20 @@ export default function KegiatanDetailClient({
         <CardTitle className="text-3xl font-bold text-gray-900 mb-2">
           {judulKegiatan}
         </CardTitle>
-        <CardDescription className="flex items-center text-gray-600">
-          <MapPin className="h-4 w-4 mr-1" /> {lokasiKegiatan}
-        </CardDescription>
+        {lokasiKegiatan && lokasiKegiatan !== "-" && (
+          <CardDescription className="flex items-center text-gray-600">
+            <MapPin className="h-4 w-4 mr-1" /> {lokasiKegiatan}
+          </CardDescription>
+        )}
         <div className="mt-4 flex items-center space-x-3">
           <Badge
             className={`${getStatusBadgeColorClass(
-              kegiatan.status
+              kegiatan.status,
             )} border px-3 py-1 text-sm font-semibold`}
           >
             Status: {kegiatan.status}
           </Badge>
-          {/* <span className="text-sm text-gray-500 flex items-center">
+          <span className="text-sm text-gray-500 flex items-center">
             <Calendar className="h-4 w-4 mr-1" />
             Dibuat:{" "}
             {new Date(kegiatan.createdAt).toLocaleDateString("id-ID", {
@@ -329,8 +335,8 @@ export default function KegiatanDetailClient({
               month: "long",
               day: "numeric",
             })}
-          </span> */}
-          {kegiatan.status === "DITOLAK" && kegiatan.alasanDitolak && (
+          </span>
+          {/* {kegiatan.status === "DITOLAK" && kegiatan.alasanDitolak && (
             <Badge
               variant="destructive"
               className="flex items-center text-sm font-semibold px-3 py-1"
@@ -338,7 +344,7 @@ export default function KegiatanDetailClient({
               <XCircle className="h-4 w-4 mr-1" /> Alasan Ditolak:{" "}
               {kegiatan.alasanDitolak}
             </Badge>
-          )}
+          )} */}
         </div>
       </CardHeader>
 
@@ -400,7 +406,7 @@ export default function KegiatanDetailClient({
               {kegiatan.fieldValues
                 .sort(
                   (a, b) =>
-                    a.jenisKegiatanField.order - b.jenisKegiatanField.order
+                    a.jenisKegiatanField.order - b.jenisKegiatanField.order,
                 )
                 .map((fieldValueEntry) => (
                   <div
@@ -433,7 +439,7 @@ export default function KegiatanDetailClient({
                     <p className="text-gray-900 break-words text-sm">
                       {formatValueBasedOnType(
                         fieldValueEntry.value,
-                        fieldValueEntry.jenisKegiatanField.fieldType
+                        fieldValueEntry.jenisKegiatanField.fieldType,
                       )}
                     </p>
                   </div>
@@ -503,10 +509,10 @@ export default function KegiatanDetailClient({
         <AlertDialogContent className="rounded-xl">
           <AlertDialogHeader>
             <AlertDialogTitle className="text-2xl font-bold">
-              Setujui Kegiatan Ini?
+              Approve Kegiatan Ini?
             </AlertDialogTitle>
             <AlertDialogDescription className="text-gray-700">
-              Anda akan menyetujui kegiatan{" "}
+              Anda akan meng-approve kegiatan{" "}
               <span className="font-semibold">{judulKegiatan}</span> yang
               diajukan oleh{" "}
               <span className="font-semibold">
@@ -532,7 +538,7 @@ export default function KegiatanDetailClient({
                 ) : (
                   <CheckCircle className="mr-2 h-4 w-4" />
                 )}
-                Ya, Setujui
+                Ya, Approve
               </Button>
             </AlertDialogAction>
           </AlertDialogFooter>

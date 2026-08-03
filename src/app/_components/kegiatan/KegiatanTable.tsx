@@ -108,7 +108,7 @@ export default function KegiatanTable({
 
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [kegiatanToDeleteId, setKegiatanToDeleteId] = useState<string | null>(
-    null
+    null,
   );
   const [isDeleting, setIsDeleting] = useState(false);
 
@@ -117,39 +117,39 @@ export default function KegiatanTable({
   // --- Gunakan useQueryState dengan parser yang memiliki opsi shallow: false ---
   const [page, setPage] = useQueryState(
     "page",
-    parseAsInteger.withDefault(1).withOptions({ shallow: false }) // Opsi shallow digabung di sini
+    parseAsInteger.withDefault(1).withOptions({ shallow: false }), // Opsi shallow digabung di sini
   );
   const [perPage, setPerPage] = useQueryState(
     "perPage",
-    parseAsInteger.withDefault(10).withOptions({ shallow: false }) // Opsi shallow digabung di sini
+    parseAsInteger.withDefault(10).withOptions({ shallow: false }), // Opsi shallow digabung di sini
   );
   const [judulFilter, setJudulFilter] = useQueryState(
     "judul",
-    parseAsString.withDefault("").withOptions({ shallow: false }) // Opsi shallow digabung di sini
+    parseAsString.withDefault("").withOptions({ shallow: false }), // Opsi shallow digabung di sini
   );
   const [statusFilter, setStatusFilter] = useQueryState(
     "status",
     parseAsStringEnum(["DIAJUKAN", "DISETUJUI", "DITOLAK"])
       .withOptions({ clearOnDefault: true })
-      .withOptions({ shallow: false }) // Opsi shallow digabung di sini
+      .withOptions({ shallow: false }), // Opsi shallow digabung di sini
   );
   const [mataKuliahFilter, setMataKuliahFilter] = useQueryState(
     "mataKuliahId",
-    parseAsString.withDefault("").withOptions({ shallow: false }) // Opsi shallow digabung di sini
+    parseAsString.withDefault("").withOptions({ shallow: false }), // Opsi shallow digabung di sini
   );
   const [semesterFilter, setSemesterFilter] = useQueryState(
     "semester",
     parseAsInteger
       .withOptions({ clearOnDefault: true })
-      .withOptions({ shallow: false }) // Opsi shallow digabung di sini
+      .withOptions({ shallow: false }), // Opsi shallow digabung di sini
   );
   const [jenisKegiatanFilter, setJenisKegiatanFilter] = useQueryState(
     "jenisKegiatanId",
-    parseAsString.withDefault("").withOptions({ shallow: false }) // Opsi shallow digabung di sini
+    parseAsString.withDefault("").withOptions({ shallow: false }), // Opsi shallow digabung di sini
   );
   const [filterAllProgramStudi, setFilterAllProgramStudi] = useQueryState(
     "filterAllProgramStudi",
-    parseAsBoolean.withDefault(false).withOptions({ shallow: false }) // Opsi shallow digabung di sini
+    parseAsBoolean.withDefault(false).withOptions({ shallow: false }), // Opsi shallow digabung di sini
   );
 
   const handleDeleteClick = (kegiatanId: string) => {
@@ -193,7 +193,7 @@ export default function KegiatanTable({
 
   const handleUpdateStatus = async (
     kegiatanId: string,
-    newStatus: "DIAJUKAN" | "DISETUJUI" | "DITOLAK"
+    newStatus: "DIAJUKAN" | "DISETUJUI" | "DITOLAK",
   ) => {
     let alasanDitolak: string | undefined = undefined;
     if (newStatus === "DITOLAK") {
@@ -249,10 +249,10 @@ export default function KegiatanTable({
 
   const getFieldValue = (
     kegiatan: KegiatanWithRelations,
-    templateKey: string
+    templateKey: string,
   ) => {
     const fieldValue = kegiatan.fieldValues.find(
-      (fv) => fv.jenisKegiatanField.templateKey === templateKey
+      (fv) => fv.jenisKegiatanField.templateKey === templateKey,
     );
     return fieldValue?.value || "-";
   };
@@ -317,7 +317,7 @@ export default function KegiatanTable({
                       ["DIAJUKAN", "DISETUJUI", "DITOLAK"].includes(value)
                     ) {
                       setStatusFilter(
-                        value as "DIAJUKAN" | "DISETUJUI" | "DITOLAK"
+                        value as "DIAJUKAN" | "DISETUJUI" | "DITOLAK",
                       );
                     }
                   }}
@@ -362,7 +362,7 @@ export default function KegiatanTable({
                     }
                     onValueChange={(value) =>
                       setSemesterFilter(
-                        value === "all" ? null : parseInt(value)
+                        value === "all" ? null : parseInt(value),
                       )
                     }
                   >
@@ -420,7 +420,7 @@ export default function KegiatanTable({
                 </Button>
                 {/* <Button onClick={handleApplyFilters} disabled={isPending}>
                   {isPending ? (
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    <Loader2 className="animate-spin" />
                   ) : null}
                   Terapkan Filter
                 </Button> */}
@@ -431,7 +431,7 @@ export default function KegiatanTable({
           {isMahasiswa && (
             <Link href="/admin/kegiatan/tambah-kegiatan">
               <Button>
-                <PlusCircle className="mr-2 h-4 w-4" /> Tambah Kegiatan
+                <PlusCircle /> Tambah Kegiatan
               </Button>
             </Link>
           )}
@@ -561,7 +561,7 @@ export default function KegiatanTable({
                                 </Button>
                               </Link>
                             )}
-                            {isDosenPembimbing && (
+                            {/* {isDosenPembimbing && (
                               <>
                                 <Button
                                   size="sm"
@@ -585,7 +585,7 @@ export default function KegiatanTable({
                                   Tolak
                                 </Button>
                               </>
-                            )}
+                            )} */}
                           </>
                         )}
                       </TableCell>

@@ -50,10 +50,10 @@ export default function DosenDashboardClient({
         />
         <DashboardCard
           icon={NotebookText}
-          title="Pengajuan Kegiatan (Bimbingan)"
+          title="Pengajuan Kegiatan "
           value={kegiatanTrend.reduce(
             (sum, item) => sum + item.diajukan + item.disetujui + item.ditolak,
-            0
+            0,
           )}
           description="Total kegiatan dari mahasiswa bimbingan."
           accentColorClass="text-indigo-500"
@@ -133,19 +133,6 @@ export default function DosenDashboardClient({
           </CardContent>
         </Card>
       </div> */}
-
-      {/* Tambahan: Daftar Mahasiswa Bimbingan Teratas (Placeholder) */}
-      <Card className="shadow-lg rounded-xl">
-        <CardHeader>
-          <CardTitle>Mahasiswa Bimbingan Paling Aktif</CardTitle>
-          <CardDescription>
-            Mahasiswa bimbingan dengan pengajuan kegiatan terbanyak.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <p className="text-gray-600">Fitur ini akan segera tersedia.</p>
-        </CardContent>
-      </Card>
     </div>
   );
 }

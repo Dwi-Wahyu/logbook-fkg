@@ -90,10 +90,10 @@ export default async function KegiatanProgressPage({
 
   // Dapatkan nama Jenis Kegiatan untuk judul
   const allJenisKegiatan = await getAllJenisKegiatan(
-    mahasiswaPengguna.programStudiId
+    mahasiswaPengguna.programStudiId,
   );
   const jenisKegiatan = allJenisKegiatan.find(
-    (jk) => jk.id === jenisKegiatanId
+    (jk) => jk.id === jenisKegiatanId,
   );
 
   if (!jenisKegiatan) {
@@ -136,6 +136,8 @@ export default async function KegiatanProgressPage({
   // Ambil semua mata kuliah untuk filter dropdown
   const allMataKuliah = await getAllMataKuliah();
 
+  const isSelf = session.user.id === penggunaId;
+
   return (
     <>
       <div className="">
@@ -148,11 +150,23 @@ export default async function KegiatanProgressPage({
               </CardTitle>
             </div>
             <CardDescription className="text-lg text-gray-700 mt-2">
-              Daftar kegiatan "{jenisKegiatan.nama}" yang diajukan oleh{" "}
-              <span className="font-semibold text-primary">
-                {mahasiswaPengguna.nama}
-              </span>
-              .
+              {isSelf ? (
+                <>
+                  Daftar kegiatan{" "}
+                  <span className="font-semibold text-primary">
+                    {jenisKegiatan.nama}
+                  </span>{" "}
+                  Anda
+                </>
+              ) : (
+                <>
+                  Daftar kegiatan "{jenisKegiatan.nama}" oleh{" "}
+                  <span className="font-semibold text-primary">
+                    {mahasiswaPengguna.nama}
+                  </span>
+                  .
+                </>
+              )}
             </CardDescription>
           </CardHeader>
           <CardContent className="pt-0">

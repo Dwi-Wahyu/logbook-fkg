@@ -125,3 +125,56 @@ export async function getDashboardData(userId: string, userRole: string) {
     totalMahasiswaProgramStudi,
   };
 }
+
+export async function getMahasiswaBimbinganPalingAktif(
+  dosenPenggunaId: string,
+  limit = 5
+) {
+  const dosen = await prisma.dosen.findUnique({
+    where: { penggunaId: dosenPenggunaId },
+    select: { id: true },
+  });
+
+  if (!dosen) return [];
+
+  const mahasiswaList = await prisma.mahasiswa.findMany({
+    where: { pembimbingId: dosen.id },
+    select: {
+      id: true,
+      pengguna: {
+        select: {
+          id: true,
+          nama: true,
+          username: true,
+          avatar: true,
+        },
+      },
+      logbook: {
+        select: {
+          _count: {
+            select: { kegiatan: true },
+          },
+        },
+      },
+    },
+  });
+
+  const result = mahasiswaList
+    .map((mhs) => {
+      const totalKegiatan = mhs.logbook.reduce(
+        (acc, lb) => acc + (lb._count?.kegiatan ?? 0),
+        0
+      );
+      return {
+        id: mhs.pengguna.id,
+        nama: mhs.pengguna.nama,
+        username: mhs.pengguna.username,
+        avatar: mhs.pengguna.avatar,
+        jumlahAktivitas: totalKegiatan,
+      };
+    })
+    .sort((a, b) => b.jumlahAktivitas - a.jumlahAktivitas)
+    .slice(0, limit);
+
+  return result;
+}

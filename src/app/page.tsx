@@ -15,8 +15,8 @@ export default async function Masuk() {
   }
 
   return (
-    <div className="flex flex-col justify-center md:flex-row w-full min-h-screen">
-      <div className="md:w-[29.5rem]">
+    <div className="flex flex-col justify-center md:flex-row w-full h-[100svh] min-h-[100svh]">
+      <div className="w-full md:w-[29.5rem] h-full relative">
         <LoginForm />
       </div>
       <div className="grow hidden md:block relative bg-[url('/bg-login.jpg')] bg-cover bg-center">

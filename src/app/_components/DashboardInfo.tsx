@@ -61,13 +61,13 @@ export default async function DashboardInfo() {
           <>
             <DashboardCard
               icon={NotebookText}
-              title="Total Pengajuan Kegiatan"
+              title="Total Pengajuan"
               value={dashboardData.jumlahPengajuan}
               accentColorClass="text-green-500"
             />
             <DashboardCard
               icon={UserSearch}
-              title="Pengajuan Belum Disetujui"
+              title="Belum Disetujui"
               value={dashboardData.jumlahPengajuanBelumDisetujui}
               accentColorClass="text-orange-500"
             />
@@ -85,15 +85,7 @@ export default async function DashboardInfo() {
       )}
 
       {/* Admin/Superadmin Specific Dashboard Section (Placeholder for future expansion) */}
-      {isAdmin && (
-        <div className="mt-8">
-          <Card className="p-6 shadow-lg rounded-xl">
-            <p className="text-gray-600">
-              Konten dashboard untuk Admin/Superadmin akan datang.
-            </p>
-          </Card>
-        </div>
-      )}
+      {isAdmin && <div className="mt-8"></div>}
     </Suspense>
   );
 }

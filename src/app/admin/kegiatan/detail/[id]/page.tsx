@@ -6,6 +6,7 @@ import {
 } from "@/app/_lib/queries/kegiatanQueries"; // Import type and query
 import { auth } from "@/config/auth";
 import KegiatanDetailClient from "@/app/_components/kegiatan/KegiatanDetailClient";
+import KegiatanApprovalPanel from "@/app/_components/kegiatan/KegiatanApprovalPanel";
 
 export default async function KegiatanDetailPage({
   params,
@@ -29,8 +30,9 @@ export default async function KegiatanDetailPage({
 
   return (
     <>
-      <div className="pb-2">
+      <div className="flex gap-4">
         <KegiatanDetailClient kegiatan={kegiatan} />
+        <KegiatanApprovalPanel kegiatanId={kegiatan.id} />
       </div>
     </>
   );

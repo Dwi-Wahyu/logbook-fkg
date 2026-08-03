@@ -98,20 +98,20 @@ PenggunaProgramStudiOverviewProps) {
   const [page, setPage] = useQueryState("page", parseAsInteger.withDefault(1));
   const [perPage, setPerPage] = useQueryState(
     "perPage",
-    parseAsInteger.withDefault(10)
+    parseAsInteger.withDefault(10),
   );
   const [nama, setNama] = useQueryState("nama", parseAsString.withDefault(""));
   const [username, setUsername] = useQueryState(
     "username",
-    parseAsString.withDefault("")
+    parseAsString.withDefault(""),
   );
   const [angkatan, setAngkatan] = useQueryState(
     "angkatan",
-    parseAsString.withDefault("")
+    parseAsString.withDefault(""),
   );
   const [peran, setPeran] = useQueryState(
     "peran",
-    parseAsStringEnum(roles).withOptions({ clearOnDefault: true })
+    parseAsStringEnum(roles).withOptions({ clearOnDefault: true }),
   );
 
   // State lokal untuk nilai input filter (tidak memicu re-fetch langsung)
@@ -228,7 +228,7 @@ PenggunaProgramStudiOverviewProps) {
   // Placeholder for delete action (needs server action)
   const handleDeletePengguna = async (penggunaId: string) => {
     const confirmed = window.confirm(
-      "Apakah Anda yakin ingin menghapus pengguna ini?"
+      "Apakah Anda yakin ingin menghapus pengguna ini?",
     );
     if (confirmed) {
       toast.custom(() => (
@@ -302,9 +302,7 @@ PenggunaProgramStudiOverviewProps) {
                 Reset Filter
               </Button>
               <Button onClick={handleApplyFilters} disabled={isPending}>
-                {isPending ? (
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                ) : null}
+                {isPending ? <Loader2 className="animate-spin" /> : null}
                 Terapkan Filter
               </Button>
             </DialogFooter>
@@ -313,7 +311,7 @@ PenggunaProgramStudiOverviewProps) {
 
         <Link href={`/admin/pengguna/tambah-pengguna`}>
           <Button className="bg-green-600 hover:bg-green-700 text-white transition-colors flex items-center px-4 py-2">
-            <UserPlus className="mr-2 h-4 w-4" /> Tambah Pengguna
+            <UserPlus /> Tambah Pengguna
           </Button>
         </Link>
       </div>

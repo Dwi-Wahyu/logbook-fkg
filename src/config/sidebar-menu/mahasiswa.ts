@@ -1,7 +1,7 @@
 import { SidebarMenu } from "@/types/sidebar";
 import {
   Activity,
-  BookType,
+  Bell,
   CircleDashed,
   FileUser,
   LayoutDashboard,
@@ -48,19 +48,6 @@ export const mahasiswaSidebarMenu: SidebarMenu = {
           icon: Activity,
           isDropdown: true,
           items: [], // akan diisi dinamis sesuai semester
-        },
-      ],
-    },
-    {
-      title: "Pengaturan",
-      url: "/admin/pengaturan",
-      items: [
-        {
-          title: "Mata Kuliah",
-          url: "mata-kuliah",
-          icon: BookType,
-          isDropdown: false,
-          items: [],
         },
       ],
     },

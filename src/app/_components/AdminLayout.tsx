@@ -20,6 +20,8 @@ import { Fragment, JSX } from "react";
 import Link from "next/link";
 import { AdminSidebar } from "@/components/ui/admin-sidebar";
 
+import NotificationBell from "@/components/ui/notification-bell";
+
 function capitalize(str: string): string {
   if (str.includes("-")) {
     const splitWord = str.split("-");
@@ -108,6 +110,9 @@ export default function ClientAdminLayout({
                   })()}
                 </BreadcrumbList>
               </Breadcrumb>
+            </div>
+            <div className="flex items-center gap-2">
+              <NotificationBell />
             </div>
           </header>
           <div className="p-5">{children}</div>
