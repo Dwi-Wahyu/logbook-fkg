@@ -6,6 +6,7 @@ import { compareSync } from "bcryptjs";
 import { loginSchema } from "@/schema/LoginSchema";
 
 export const authConfig: NextAuthConfig = {
+  trustHost: true,
   providers: [
     Credentials({
       credentials: {
