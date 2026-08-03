@@ -6,7 +6,8 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "seed-superadmin": "tsx prisma/seed-superadmin.ts"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
